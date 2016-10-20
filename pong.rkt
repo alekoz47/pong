@@ -109,7 +109,7 @@
         [else (serve w)]))
 
 ;;World String -> World
-;;
+;;builds new worldstate after ball bounce, inverts velocity
 (define [return w s]
   (make-world
    (make-ball
@@ -136,30 +136,16 @@
 ;;switches angle randomly
 (define [serve w]
   (if (= (random 2) 1)
-      (make-world
-       (make-ball
-        (make-pos (/ WIDTH 2)
-                  (/ HEIGHT 2))
-        (make-vel (- 0 (/ 1 (sqrt 2)))
-                  (/ 1 (sqrt 2)))
-        BALL-SPEED-DEFAULT)
-       (make-paddle
-        (make-pos (pos-x (paddle-pos (world-paddle w)))
-                  (pos-y (paddle-pos (world-paddle w))))
-        (- (paddle-life (world-paddle w)) 1)
-        (paddle-score (world-paddle w))))
-      (make-world
-       (make-ball
-        (make-pos (/ WIDTH 2)
-                  (/ HEIGHT 2))
-        (make-vel (- 0 (/ 1 (sqrt 2)))
-                  (- 0 (/ 1 (sqrt 2))))
-        BALL-SPEED-DEFAULT)
-       (make-paddle
-        (make-pos (pos-x (paddle-pos (world-paddle w)))
-                  (pos-y (paddle-pos (world-paddle w))))
-        (- (paddle-life (world-paddle w)) 1)
-        (paddle-score (world-paddle w))))))
+      (make-world (make-ball
+                   (make-pos (/ WIDTH 2) (/ HEIGHT 2))
+                   (make-vel (- 0 (/ 1 (sqrt 2))) (/ 1 (sqrt 2)))
+                   BALL-SPEED)
+                  (world-paddle w))
+      (make-world (make-ball
+                   (make-pos (/ WIDTH 2) (/ HEIGHT 2))
+                   (make-vel (/ 1 (sqrt 2)) (/ 1 (sqrt 2)))
+                   BALL-SPEED)
+                  (world-paddle w))))
 
 ;;World -> World
 ;;bounces ball off wall
