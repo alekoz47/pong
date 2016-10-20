@@ -44,10 +44,14 @@
   (... (fn-for-pos (ball-pos b))
        (fn-for-vel (ball-vel b))))
 
-;;Paddle is Position
+;;Paddle is one of:
+;;- empty
+;;- (cons pos Paddle)
 #;
 (define (fn-for-paddle p)
-  (... (fn-for-pos p)))
+  (cond [(empty? p) (...)]
+        [else (... (first p)
+                   (fn-for-paddle (rest p)))]))
 
 (define-struct world (ball paddle))
 ;;World is (make-world Ball Paddle)
@@ -63,11 +67,10 @@
 ;;start world with (main ...)
 (define [main w]
   (big-bang w
-            (name "Self-Pong")
-            (on-tick ball-status TICK-SPEED)
+            (name "Simple Pong")
+            (on-tick tock TICK-SPEED)
             (to-draw render)
-            (on-key handle-key)
-            (stop-when continue?)))
+            (on-key handle-key)))
 
 ;;World -> World
 ;;decides (left-ball w) if left wall,
