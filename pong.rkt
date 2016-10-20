@@ -87,90 +87,50 @@
          (wall-ball w)]
         [else (move-ball w)]))
 
-;;World -> World
-;;bounces ball if on paddle, otherwise lose life
-(define [left-ball w]
-  (cond [(and (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (paddle-pos (world-paddle w)))
+;;World -> World String
+;;bounces ball if on paddle, otherwise serve
+(define [paddle-ball w]
+  (cond [(and (< (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
+              (>= (pos-y (ball-pos (world-ball w)))
+                  (- (pos-y (first (world-paddle w)))
                      (/ (image-height PADDLE) 2)))
               (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (paddle-pos (world-paddle w)))
+                  (+ (pos-y (first (world-paddle w)))
                      (/ (image-height PADDLE) 2))))
-         (return w)]
+         (return w "left")]
+        [(and (> (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
+              (>= (pos-y (ball-pos (world-ball w)))
+                  (- (pos-y (rest (world-paddle w)))
+                     (/ (image-height PADDLE) 2)))
+              (<= (pos-y (ball-pos (world-ball w)))
+                  (+ (pos-y (rest (world-paddle w)))
+                     (/ (image-height PADDLE) 2))))
+         (return w "right")]
         [else (serve w)]))
 
-;;World -> World
-;;increases speed on bounce based on contact point
-(define [return w]
-  (cond [(and (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (paddle-pos (world-paddle w)))
-                     (/ (image-height PADDLE) 6)))
-              (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (paddle-pos (world-paddle w)))
-                     (/ (image-height PADDLE) 6))))
-         (make-world
-          (make-ball
-           (make-pos (- (round-five (pos-x (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
-                           (round-five (vel-x (ball-vel (world-ball w))))))
-                     (+ (round-five (pos-y (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
-                           (round-five (vel-y (ball-vel (world-ball w)))))))
-           (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
-                     (round-five (vel-y (ball-vel (world-ball w)))))
-           (+ BALL-SPEED-FACTOR (ball-speed (world-ball w))))
-          (make-paddle
-           (make-pos (pos-x (paddle-pos (world-paddle w)))
-                     (pos-y (paddle-pos (world-paddle w))))
-           (paddle-life (world-paddle w))
-           (+ (ball-speed (world-ball w))
-              (paddle-score (world-paddle w)))))]
-        [(and (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (paddle-pos (world-paddle w)))
-                     (/ (image-height PADDLE) 6)))
-              (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (paddle-pos (world-paddle w)))
-                     (/ (image-height PADDLE) 2))))
-         (make-world
-          (make-ball
-           (make-pos (- (round-five (pos-x (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
-                           (round-five (vel-x (ball-vel (world-ball w))))))
-                     (+ (round-five (pos-y (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
-                           (round-five (vel-y (ball-vel (world-ball w)))))))
-           (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
-                     (round-five (vel-y (ball-vel (world-ball w)))))
-           (+ (* 2 BALL-SPEED-FACTOR) (ball-speed (world-ball w))))
-          (make-paddle
-           (make-pos (pos-x (paddle-pos (world-paddle w)))
-                     (pos-y (paddle-pos (world-paddle w))))
-           (paddle-life (world-paddle w))
-           (+ (ball-speed (world-ball w))
-              (paddle-score (world-paddle w)))))]
-        [(and (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (paddle-pos (world-paddle w)))
-                     (/ (image-height PADDLE) 2)))
-              (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (paddle-pos (world-paddle w)))
-                     (/ (image-height PADDLE) 6))))
-         (make-world
-          (make-ball
-           (make-pos (- (round-five (pos-x (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
-                           (round-five (vel-x (ball-vel (world-ball w))))))
-                     (+ (round-five (pos-y (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
-                           (round-five (vel-y (ball-vel (world-ball w)))))))
-           (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
-                     (round-five (vel-y (ball-vel (world-ball w)))))
-           (+ (* 2 BALL-SPEED-FACTOR) (ball-speed (world-ball w))))
-          (make-paddle
-           (make-pos (pos-x (paddle-pos (world-paddle w)))
-                     (pos-y (paddle-pos (world-paddle w))))
-           (paddle-life (world-paddle w))
-           (+ (ball-speed (world-ball w))
-              (paddle-score (world-paddle w)))))]))
+;;World String -> World
+;;
+(define [return w s]
+  (make-world
+   (make-ball
+    (ball-reset (world-ball w) s)
+    (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
+              (round-five (vel-y (ball-vel (world-ball w))))))
+   (world-paddle w)))
+
+;;Pos String -> Pos
+;;resets ball position
+(define [ball-reset wb s]
+  (cond [(string=? s "left")
+         (make-pos (- (round-five (pos-x (ball-pos wb)))
+                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
+                   (+ (round-five (pos-y (ball-pos (world-ball w))))
+                      (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]
+        [(string=? s "right")
+         (make-pos (+ (round-five (pos-x (ball-pos wb)))
+                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
+                   (- (round-five (pos-y (ball-pos (world-ball w))))
+                      (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]))
 
 ;;World -> World
 ;;switches angle randomly
