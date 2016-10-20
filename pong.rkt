@@ -11,12 +11,12 @@
 
 (define WIDTH 1300)
 (define HEIGHT 680)
-(define PADDLE (rectangle 40 150 "solid" "white"))
-(define BALL (circle 30 "solid" "white"))
-(define PADDING (/ (image-height BALL) 2))
+(define BALL (circle 10 "solid" "white"))
+(define PADDLE (rectangle (* 2 (image-width BALL)) 150 "solid" "white"))
+(define PADDING (/ (image-width BALL) 2))
 (define TICK-SPEED 0.015)
 (define PADDLE-SPEED 40)
-(define BALL-SPEED 7)
+(define BALL-SPEED 10)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
 ;;================
@@ -73,20 +73,18 @@
             (on-key handle-key)))
 
 ;;World -> World
-;;decides (left-ball w) if left wall,
-;;    (bounce-ball w) on other walls,
-;;    (move-ball w) otherwise
-(define [ball-status w]
-  (cond [(<= (round-five (pos-x (ball-pos (world-ball w))))
-             (+ PADDING (image-width PADDLE)))
-         (left-ball w)]
-        [(or (or (>= (round-five (pos-y (ball-pos (world-ball w))))
-                     (- HEIGHT PADDING))
-                 (<= (round-five (pos-y (ball-pos (world-ball w))))
-                     PADDING))
+;;decides if ball is left/right, up/down, or between
+(define [tock w]
+  (cond [(or (<= (round-five (pos-x (ball-pos (world-ball w))))
+                 (+ PADDING (image-width PADDLE)))
              (>= (round-five (pos-x (ball-pos (world-ball w))))
-                 (- WIDTH PADDING)))
-         (bounce-ball w)]
+                 (- WIDTH (+ PADDING (image-width PADDLE)))))
+         (paddle-ball w)]
+        [(or (>= (round-five (pos-y (ball-pos (world-ball w))))
+                 (- HEIGHT PADDING))
+             (<= (round-five (pos-y (ball-pos (world-ball w))))
+                 PADDING))
+         (wall-ball w)]
         [else (move-ball w)]))
 
 ;;World -> World
@@ -382,4 +380,3 @@
              BALL-SPEED-DEFAULT)
   (make-paddle (make-pos (/ (image-width PADDLE) 2) 300)
                4 0)))
-           
