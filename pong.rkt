@@ -157,14 +157,14 @@
          (make-world
           (make-ball
            (make-pos (+ (round-five (pos-x (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
+                        (* BALL-SPEED
                            (round-five (vel-x (ball-vel (world-ball w))))))
                      (+ (round-five (pos-y (ball-pos (world-ball w))))
-                        (* (ball-speed (world-ball w))
+                        (* BALL-SPEED
                            (round-five (vel-y (ball-vel (world-ball w)))))))
            (make-vel (round-five (vel-x (ball-vel (world-ball w))))
                      (- 0 (round-five (vel-y (ball-vel (world-ball w))))))
-           (ball-speed (world-ball w)))
+           BALL-SPEED)
           (make-paddle
            (make-pos (pos-x (paddle-pos (world-paddle w)))
                      (pos-y (paddle-pos (world-paddle w))))
@@ -173,14 +173,14 @@
         [else (make-world
                (make-ball
                 (make-pos (- (round-five (pos-x (ball-pos (world-ball w))))
-                             (* (ball-speed (world-ball w))
+                             (* BALL-SPEED
                                 (round-five (vel-x (ball-vel (world-ball w))))))
                           (+ (round-five (pos-y (ball-pos (world-ball w))))
-                             (* (ball-speed (world-ball w))
+                             (* BALL-SPEED
                                 (round-five (vel-y (ball-vel (world-ball w)))))))
                 (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
                           (round-five (vel-y (ball-vel (world-ball w)))))
-                (ball-speed (world-ball w)))
+                BALL-SPEED)
                (make-paddle
                 (make-pos (pos-x (paddle-pos (world-paddle w)))
                           (pos-y (paddle-pos (world-paddle w))))
@@ -193,19 +193,13 @@
   (make-world (make-ball
                (make-pos
                 (+ (round-five (pos-x (ball-pos (world-ball w))))
-                   (* (ball-speed (world-ball w))
+                   (* BALL-SPEED
                       (round-five (vel-x (ball-vel (world-ball w))))))
                 (- (round-five (pos-y (ball-pos (world-ball w))))
-                   (* (ball-speed (world-ball w))
+                   (* BALL-SPEED
                       (round-five (vel-y (ball-vel (world-ball w)))))))
-               (make-vel (vel-x (ball-vel (world-ball w)))
-                         (vel-y (ball-vel (world-ball w))))
-               (ball-speed (world-ball w)))
-              (make-paddle
-               (make-pos (pos-x (paddle-pos (world-paddle w)))
-                         (pos-y (paddle-pos (world-paddle w))))
-               (paddle-life (world-paddle w))
-               (paddle-score (world-paddle w)))))
+               (ball-vel (world-ball w)))
+              (world-paddle w)))
 
 ;;Number -> Number
 ;;truncates inexact number to 5 decimal places
@@ -213,9 +207,7 @@
   (/ (round (* n (expt 10 5))) (expt 10 5)))
 
 ;;World -> Image
-;;render world on screen
-;;    if alive, display at positions
-;;    if dead, display score
+;;render world on screen at positions
 (define [render w]
   (cond [(= (paddle-life (world-paddle w)) 0)
          (overlay
@@ -250,7 +242,7 @@
                          (pos-y (ball-pos (world-ball w))))
                (make-vel (vel-x (ball-vel (world-ball w)))
                          (vel-y (ball-vel (world-ball w))))
-               (ball-speed (world-ball w)))
+               BALL-SPEED)
               (make-paddle (make-pos
                             (pos-x (paddle-pos (world-paddle w)))
                             (- (pos-y (paddle-pos (world-paddle w)))
@@ -263,7 +255,7 @@
                          (pos-y (ball-pos (world-ball w))))
                (make-vel (vel-x (ball-vel (world-ball w)))
                          (vel-y (ball-vel (world-ball w))))
-               (ball-speed (world-ball w)))
+               BALL-SPEED)
               (make-paddle (make-pos
                             (pos-x (paddle-pos (world-paddle w)))
                             (pos-y (paddle-pos (world-paddle w))))
@@ -278,7 +270,7 @@
                          (pos-y (ball-pos (world-ball w))))
                (make-vel (vel-x (ball-vel (world-ball w)))
                          (vel-y (ball-vel (world-ball w))))
-               (ball-speed (world-ball w)))
+               BALL-SPEED)
               (make-paddle (make-pos
                             (pos-x (paddle-pos (world-paddle w)))
                             (+ (pos-y (paddle-pos (world-paddle w)))
@@ -291,7 +283,7 @@
                          (pos-y (ball-pos (world-ball w))))
                (make-vel (vel-x (ball-vel (world-ball w)))
                          (vel-y (ball-vel (world-ball w))))
-               (ball-speed (world-ball w)))
+               BALL-SPEED)
               (make-paddle (make-pos
                             (pos-x (paddle-pos (world-paddle w)))
                             (pos-y (paddle-pos (world-paddle w))))
@@ -304,7 +296,7 @@
                      (pos-y (ball-pos (world-ball w))))
            (make-vel (vel-x (ball-vel (world-ball w)))
                      (vel-y (ball-vel (world-ball w))))
-           (ball-speed (world-ball w)))
+           BALL-SPEED)
           (make-paddle
            (make-pos (pos-x (paddle-pos (world-paddle w)))
                      (pos-y (paddle-pos (world-paddle w))))
