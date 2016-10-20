@@ -127,6 +127,16 @@
          (make-pos (+ (round-five (pos-x (ball-pos wb)))
                       (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
                    (- (round-five (pos-y (ball-pos wb)))
+                      (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]
+        [(string=? s "top")
+         (make-pos (+ (round-five (pos-x (ball-pos wb)))
+                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
+                   (+ (round-five (pos-y (ball-pos wb)))
+                      (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]
+        [(string=? s "bottom")
+         (make-pos (- (round-five (pos-x (ball-pos wb)))
+                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
+                   (- (round-five (pos-y (ball-pos wb)))
                       (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]))
 
 ;;World -> World
@@ -142,10 +152,17 @@
                    (make-vel (/ 1 (sqrt 2)) (/ 1 (sqrt 2))))
                   (world-paddle w))))
 
-;;World -> World
+;;World -> World String
 ;;bounces ball off wall
-;;!!!
 (define [wall-ball w]
+#;(define [wall-ball w]
+    (make-world
+          (make-ball
+           (switch (world-ball w) "top")
+           (make-vel (round-five (vel-x (ball-vel (world-ball w))))
+                     (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
+          (world-paddle w)))
+
   (cond [(or (>= (round-five (pos-y (ball-pos (world-ball w))))
                  (- HEIGHT PADDING))
              (<= (round-five (pos-y (ball-pos (world-ball w))))
@@ -160,8 +177,7 @@
                            (round-five (vel-y (ball-vel (world-ball w)))))))
            (make-vel (round-five (vel-x (ball-vel (world-ball w))))
                      (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
-          (make-pos (pos-x (paddle-pos (world-paddle w)))
-                    (pos-y (paddle-pos (world-paddle w)))))]
+          (world-paddle w))]
         [else (make-world
                (make-ball
                 (make-pos (- (round-five (pos-x (ball-pos (world-ball w))))
@@ -172,8 +188,7 @@
                                 (round-five (vel-y (ball-vel (world-ball w)))))))
                 (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
                           (round-five (vel-y (ball-vel (world-ball w))))))
-               (make-pos (pos-x (paddle-pos (world-paddle w)))
-                         (pos-y (paddle-pos (world-paddle w)))))]))
+               (world-paddle w))]))
 
 ;;World -> World
 ;;advances ball position with ball velocity and speed
@@ -212,7 +227,6 @@
 
 ;;World KeyEvent -> World
 ;;w, up: paddle up 5, s, down: paddle down 5
-;;!!!
 (define [handle-key w ke]
   (cond [(and (key=? ke "w")
               (>= (- (pos-y (first (world-paddle w)))
@@ -258,7 +272,7 @@
 (main
  (make-world
   (make-ball (make-pos (- WIDTH (image-height BALL)) (/ HEIGHT 2))
-             (make-vel (- 0 (/ 1 (sqrt 2))) (- 0 (/ 1 (sqrt 2))))
-             BALL-SPEED-DEFAULT)
-  (make-paddle (make-pos (/ (image-width PADDLE) 2) 300)
+             (make-vel (- 0 (/ 1 (sqrt 2))) (- 0 (/ 1 (sqrt 2)))))
+  (list (make-pos (/ (image-width PADDLE) 2) 300)
+        (make-pos (- WIDTH (/ (image-width PADDLE) 2)) 300)
                4 0)))
