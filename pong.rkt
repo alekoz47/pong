@@ -1,10 +1,10 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname self-pong) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname pong) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 (require 2htdp/image)
 (require 2htdp/universe)
 
-;;single player pong
+;;simple two-player pong
 
 ;;================
 ;;Constants:
@@ -16,8 +16,7 @@
 (define PADDING (/ (image-height BALL) 2))
 (define TICK-SPEED 0.015)
 (define PADDLE-SPEED 40)
-(define BALL-SPEED-DEFAULT 7)
-(define BALL-SPEED-FACTOR 3)
+(define BALL-SPEED 7)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
 ;;================
@@ -38,23 +37,17 @@
   (... (vel-x v)
        (vel-y v)))
 
-(define-struct ball (pos vel speed))
-;;Ball is (make-ball Position Velocity Natural)
+(define-struct ball (pos vel=))
+;;Ball is (make-ball Position Velocity)
 #;
 (define (fn-for-ball b)
   (... (fn-for-pos (ball-pos b))
-       (fn-for-vel (ball-vel b))
-       (ball-speed b)))
+       (fn-for-vel (ball-vel b))))
 
-(define-struct paddle (pos life score))
-;;Paddle is (make-paddle (make-pos Position
-;;                       Number[0, 4]
-;;                       Number)
+;;Paddle is Position
 #;
 (define (fn-for-paddle p)
-  (... (fn-for-pos (paddle-pos p))
-       (paddle-life p)
-       (paddle-score p)))
+  (... (fn-for-pos p)))
 
 (define-struct world (ball paddle))
 ;;World is (make-world Ball Paddle)
