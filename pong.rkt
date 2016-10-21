@@ -89,7 +89,7 @@
               (<= (pos-y (ball-pos (world-ball w)))
                   (+ (pos-y (world-paddle1 w))
                      (/ (image-height PADDLE) 2))))
-         (return w "left")]
+         (return w "left/right")]
         [(and (> (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
               (>= (pos-y (ball-pos (world-ball w)))
                   (- (pos-y (world-paddle2 w))
@@ -97,7 +97,7 @@
               (<= (pos-y (ball-pos (world-ball w)))
                   (+ (pos-y (world-paddle2 w))
                      (/ (image-height PADDLE) 2))))
-         (return w "right")]
+         (return w "left/right")]
         [else (serve w)]))
 
 ;;World String -> World
@@ -114,22 +114,12 @@
 ;;Pos String -> Pos
 ;;resets ball position
 (define [ball-reset wb s]
-  (cond [(string=? s "left")
+  (cond [(string=? s "left/right")
          (make-pos (- (round-five (pos-x (ball-pos wb)))
                       (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
                    (+ (round-five (pos-y (ball-pos wb)))
                       (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]
-        [(string=? s "right")
-         (make-pos (+ (round-five (pos-x (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
-                   (- (round-five (pos-y (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]
         [(string=? s "top/bottom")
-         (make-pos (+ (round-five (pos-x (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
-                   (+ (round-five (pos-y (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-y (ball-vel wb))))))]
-        [(string=? s "bottom")
          (make-pos (+ (round-five (pos-x (ball-pos wb)))
                       (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
                    (+ (round-five (pos-y (ball-pos wb)))
@@ -154,12 +144,12 @@
 ;;bounces ball off wall
 (define [wall-ball w]
   (make-world
-          (make-ball
-           (ball-reset (world-ball w) "top/bottom")
-           (make-vel (round-five (vel-x (ball-vel (world-ball w))))
-                     (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
-          (world-paddle1 w)
-          (world-paddle2 w)))
+   (make-ball
+    (ball-reset (world-ball w) "top/bottom")
+    (make-vel (round-five (vel-x (ball-vel (world-ball w))))
+              (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
+   (world-paddle1 w)
+   (world-paddle2 w)))
 
 ;;World -> World
 ;;advances ball position with ball velocity and speed
