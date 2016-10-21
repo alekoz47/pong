@@ -44,18 +44,13 @@
   (... (fn-for-pos (ball-pos b))
        (fn-for-vel (ball-vel b))))
 
-;;Paddle is (list Pos Pos empty)
-#;
-(define (fn-for-paddle p)
-  (... (fn-for-pos (first (paddle p)))
-       (fn-for-pos (rest (paddle p)))))
-
-(define-struct world (ball paddle))
-;;World is (make-world Ball Paddle)
+(define-struct world (ball paddle1 paddle2))
+;;World is (make-world Ball Pos Pos)
 #;
 (define (fn-for-world w)
   (... (fn-for-ball (world-ball w))
-       (fn-for-paddle (world-paddle w))))
+       (fn-for-pos (world-paddle1 w))
+       (fn-for-pos (world-paddle2 w))))
 
 ;;================
 ;;Functions:
