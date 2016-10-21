@@ -84,18 +84,18 @@
 (define [paddle-ball w]
   (cond [(and (< (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
               (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (first (world-paddle w)))
+                  (- (pos-y (world-paddle1 w))
                      (/ (image-height PADDLE) 2)))
               (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (first (world-paddle w)))
+                  (+ (pos-y (world-paddle1 w))
                      (/ (image-height PADDLE) 2))))
          (return w "left")]
         [(and (> (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
               (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (rest (world-paddle w)))
+                  (- (pos-y (world-paddle2 w))
                      (/ (image-height PADDLE) 2)))
               (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (rest (world-paddle w)))
+                  (+ (pos-y (world-paddle2 w))
                      (/ (image-height PADDLE) 2))))
          (return w "right")]
         [else (serve w)]))
@@ -108,7 +108,8 @@
     (ball-reset (world-ball w) s)
     (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
               (round-five (vel-y (ball-vel (world-ball w))))))
-   (world-paddle w)))
+   (world-paddle1 w)
+   (world-paddle2 w)))
 
 ;;Pos String -> Pos
 ;;resets ball position
@@ -141,23 +142,26 @@
       (make-world (make-ball
                    (make-pos (/ WIDTH 2) (/ HEIGHT 2))
                    (make-vel (- 0 (/ 1 (sqrt 2))) (/ 1 (sqrt 2))))
-                  (world-paddle w))
+                  (world-paddle1 w)
+                  (world-paddle2 w))
       (make-world (make-ball
                    (make-pos (/ WIDTH 2) (/ HEIGHT 2))
                    (make-vel (/ 1 (sqrt 2)) (/ 1 (sqrt 2))))
-                  (world-paddle w))))
+                  (world-paddle1 w)
+                  (world-paddle2 w))))
 
 ;;World -> World String
 ;;bounces ball off wall
 (define [wall-ball w]
-#;(define [wall-ball w]
-    (make-world
-          (make-ball
-           (switch (world-ball w) "top")
-           (make-vel (round-five (vel-x (ball-vel (world-ball w))))
-                     (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
-          (world-paddle w)))
-
+  #;(define [wall-ball w]
+      (make-world
+       (make-ball
+        (switch (world-ball w) "top")
+        (make-vel (round-five (vel-x (ball-vel (world-ball w))))
+                  (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
+       (world-paddle1 w)
+       (world-paddle2 w)))
+  
   (cond [(or (>= (round-five (pos-y (ball-pos (world-ball w))))
                  (- HEIGHT PADDING))
              (<= (round-five (pos-y (ball-pos (world-ball w))))
@@ -172,7 +176,8 @@
                            (round-five (vel-y (ball-vel (world-ball w)))))))
            (make-vel (round-five (vel-x (ball-vel (world-ball w))))
                      (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
-          (world-paddle w))]
+          (world-paddle1 w)
+          (world-paddle2 w))]
         [else (make-world
                (make-ball
                 (make-pos (- (round-five (pos-x (ball-pos (world-ball w))))
@@ -183,7 +188,8 @@
                                 (round-five (vel-y (ball-vel (world-ball w)))))))
                 (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
                           (round-five (vel-y (ball-vel (world-ball w))))))
-               (world-paddle w))]))
+               (world-paddle1 w)
+               (world-paddle2 w))]))
 
 ;;World -> World
 ;;advances ball position with ball velocity and speed
@@ -197,7 +203,8 @@
                    (* BALL-SPEED
                       (round-five (vel-y (ball-vel (world-ball w)))))))
                (ball-vel (world-ball w)))
-              (world-paddle w)))
+              (world-paddle1 w)
+              (world-paddle2 w)))
 
 ;;Number -> Number
 ;;truncates inexact number to 5 decimal places
@@ -207,58 +214,57 @@
 ;;World -> Image
 ;;render world on screen at positions
 (define [render w]
-  (overlay
-   (place-images (list BALL PADDLE PADDLE)
+  (place-images (list BALL PADDLE PADDLE)
                  (list (make-posn
                         (pos-x (ball-pos (world-ball w)))
                         (pos-y (ball-pos (world-ball w))))
                        (make-posn
-                        (pos-x (first (world-paddle w)))
-                        (pos-y (first (world-paddle w))))
+                        (pos-x (world-paddle1 w))
+                        (pos-y (world-paddle1 w)))
                        (make-posn
-                        (pos-x (rest (world-paddle w)))
-                        (pos-y (rest (world-paddle w)))))
-                 MTS)))
+                        (pos-x (world-paddle2 w))
+                        (pos-y (world-paddle2 w))))
+                 MTS))
 
 ;;World KeyEvent -> World
 ;;w, up: paddle up 5, s, down: paddle down 5
 (define [handle-key w ke]
   (cond [(and (key=? ke "w")
-              (>= (- (pos-y (first (world-paddle w)))
+              (>= (- (pos-y (world-paddle1 w))
                      (* 0.5 (image-height PADDLE))) 0))
          (make-world
           (world-ball w)
-          (list (make-pos
-                 (pos-x (first (world-paddle w)))
-                 (- (pos-y (first (world-paddle w))) PADDLE-SPEED))
-                (rest (world-paddle w))))]
+          (make-pos
+           (pos-x (world-paddle1 w))
+           (- (pos-y (world-paddle1 w)) PADDLE-SPEED))
+          (world-paddle2 w))]
         [(and (key=? ke "s")
-              (<= (+ (pos-y (first (world-paddle w)))
+              (<= (+ (pos-y (world-paddle1 w))
                      (* 0.5 (image-height PADDLE))) HEIGHT))
          (make-world
           (world-ball w)
-          (list (make-pos
-                 (pos-x (first (world-paddle w)))
-                 (+ (pos-y (first (world-paddle w))) PADDLE-SPEED))
-                (rest (world-paddle w))))]
+          (make-pos
+           (pos-x (world-paddle1 w))
+           (+ (pos-y (world-paddle1 w)) PADDLE-SPEED))
+          (world-paddle2 w))]
         [(and (key=? ke "up")
-              (>= (- (pos-y (rest (world-paddle w)))
+              (>= (- (pos-y (world-paddle2 w))
                      ( * 0.5 (image-height PADDLE))) 0))
          (make-world
           (world-ball w)
-          (list (make-pos
-                 (pos-x (rest (world-paddle w)))
-                 (- (pos-y (rest (world-paddle w))) PADDLE-SPEED))
-                (rest (world-ball w))))]
+          (world-paddle1 w)
+          (make-pos
+           (pos-x (world-paddle2 w))
+           (- (pos-y (world-paddle2 w)) PADDLE-SPEED)))]
         [(and (key=? ke "down")
-              (<= (+ (pos-y (rest (world-paddle w)))
+              (<= (+ (pos-y (world-paddle2 w))
                      (* 0.5 (image-height PADDLE))) HEIGHT))
          (make-world
           (world-ball w)
-          (list (make-pos
-                 (pos-x (rest (world-paddle w)))
-                 (+ (pos-y (rest (world-paddle w))) PADDLE-SPEED))
-                (rest (world-ball w))))]
+          (world-paddle1 w)
+          (make-pos
+           (pos-x (world-paddle2 w))
+           (+ (pos-y (world-paddle2 w)) PADDLE-SPEED)))]
         [else w]))
 
 ;;================
@@ -268,6 +274,5 @@
  (make-world
   (make-ball (make-pos (- WIDTH (image-height BALL)) (/ HEIGHT 2))
              (make-vel (- 0 (/ 1 (sqrt 2))) (- 0 (/ 1 (sqrt 2)))))
-  (list (make-pos (/ (image-width PADDLE) 2) 300)
-        (make-pos (- WIDTH (/ (image-width PADDLE) 2)) 300)
-               4 0)))
+  (make-pos (/ (image-width PADDLE) 2) 300)
+  (make-pos (- WIDTH (/ (image-width PADDLE) 2)) 300)))
