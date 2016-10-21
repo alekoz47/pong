@@ -9,10 +9,10 @@
 ;;================
 ;;Constants:
 
-(define WIDTH 1300)
-(define HEIGHT 680)
-(define BALL (circle 10 "solid" "white"))
-(define PADDLE (rectangle (* 2 (image-width BALL)) 150 "solid" "white"))
+(define WIDTH 1000)
+(define HEIGHT 600)
+(define BALL (circle 20 "solid" "white"))
+(define PADDLE (rectangle (/ (image-width BALL) 2) 150 "solid" "white"))
 (define PADDING (/ (image-width BALL) 2))
 (define TICK-SPEED 0.015)
 (define PADDLE-SPEED 40)
