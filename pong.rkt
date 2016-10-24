@@ -62,7 +62,8 @@
             (name "Simple Pong")
             (on-tick tock TICK-SPEED)
             (to-draw render)
-            (on-key handle-key)))
+            (on-key handle-key)
+            (on-release handle-release)))
 
 ;;World -> World
 ;;decides if ball is left/right, up/down, or between
@@ -187,7 +188,7 @@
                 MTS))
 
 ;;World KeyEvent -> World
-;;w, up: paddle up 5, s, down: paddle down 5
+;;start moving paddle
 (define [handle-key w ke]
   (cond [(and (key=? ke "w")
               (>= (- (pos-y (world-paddle1 w))
@@ -226,6 +227,11 @@
            (pos-x (world-paddle2 w))
            (+ (pos-y (world-paddle2 w)) PADDLE-SPEED)))]
         [else w]))
+
+;;World KeyEvent -> World
+;;stop moving paddle
+;;!!!
+(define [handle-release w ke] w) ;stub
 
 ;;================
 ;;Run
