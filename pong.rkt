@@ -89,7 +89,7 @@
               (<= (pos-y (ball-pos (world-ball w)))
                   (+ (pos-y (world-paddle1 w))
                      (/ (image-height PADDLE) 2))))
-         (return w "left/right")]
+         (return w "left")]
         [(and (> (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
               (>= (pos-y (ball-pos (world-ball w)))
                   (- (pos-y (world-paddle2 w))
@@ -97,8 +97,19 @@
               (<= (pos-y (ball-pos (world-ball w)))
                   (+ (pos-y (world-paddle2 w))
                      (/ (image-height PADDLE) 2))))
-         (return w "left/right")]
+         (return w "right")]
         [else (serve w)]))
+
+;;World -> World String
+;;bounces ball off wall
+(define [wall-ball w]
+  (make-world
+   (make-ball
+    (ball-reset (world-ball w) "top/bottom")
+    (make-vel (round-five (vel-x (ball-vel (world-ball w))))
+              (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
+   (world-paddle1 w)
+   (world-paddle2 w)))
 
 ;;World String -> World
 ;;builds new worldstate after ball bounce, inverts velocity
@@ -114,7 +125,7 @@
 ;;Pos String -> Pos
 ;;resets ball position
 (define [ball-reset wb s]
-  (cond [(string=? s "left/right")
+  (cond [(or (string=? s "left") (string=? s "right"))
          (make-pos (- (round-five (pos-x (ball-pos wb)))
                       (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
                    (+ (round-five (pos-y (ball-pos wb)))
@@ -139,17 +150,6 @@
                    (make-vel (/ 1 (sqrt 2)) (/ 1 (sqrt 2))))
                   (world-paddle1 w)
                   (world-paddle2 w))))
-
-;;World -> World String
-;;bounces ball off wall
-(define [wall-ball w]
-  (make-world
-   (make-ball
-    (ball-reset (world-ball w) "top/bottom")
-    (make-vel (round-five (vel-x (ball-vel (world-ball w))))
-              (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
-   (world-paddle1 w)
-   (world-paddle2 w)))
 
 ;;World -> World
 ;;advances ball position with ball velocity and speed
