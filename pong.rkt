@@ -188,20 +188,40 @@
                        (pos-x (ball-pos (world-ball w)))
                        (pos-y (ball-pos (world-ball w))))
                       (make-posn
-                       (pos-x (world-paddle1 w))
-                       (pos-y (world-paddle1 w)))
+                       (pos-x (paddle-pos (world-paddle1 w)))
+                       (pos-y (paddle-pos (world-paddle1 w))))
                       (make-posn
-                       (pos-x (world-paddle2 w))
-                       (pos-y (world-paddle2 w))))
+                       (pos-x (paddle-pos (world-paddle2 w)))
+                       (pos-y (paddle-pos (world-paddle2 w)))))
                 MTS))
 
 ;;World KeyEvent -> World
 ;;start moving paddle
 (define [handle-key w ke]
-  (cond [(or (key=? ke "w") (key=? ke "s"))
-         (move-paddle (world-paddle1 w) ke)]
-        [(or (key=? ke "up") (key=? ke "down"))
-         (move-paddle (world-paddle2 w) ke)]
+  (cond [(key=? ke "w")
+         (make-world (world-ball w)
+                     (make-paddle
+                      (paddle-pos (world-paddle1 w))
+                      (make-vel 0 1))
+                     (world-paddle2 w))]
+        [(key=? ke "s")
+         (make-world (world-ball w)
+                     (make-paddle
+                      (paddle-pos (world-paddle1 w))
+                      (make-vel 0 -1))
+                     (world-paddle2 w))]
+        [(key=? ke "up")
+         (make-world (world-ball w)
+                     (world-paddle1 w)
+                     (make-paddle
+                      (paddle-pos (world-paddle2 w))
+                      (make-vel 0 1)))]
+        [(key=? ke "down")
+         (make-world (world-ball w)
+                     (world-paddle1 w)
+                     (make-paddle
+                      (paddle-pos (world-paddle2 w))
+                      (make-vel 0 -1)))]
         [else w]))
 #;
 (define [handle-key w ke]
@@ -245,8 +265,33 @@
 
 ;;World KeyEvent -> World
 ;;stop moving paddle
-;;!!!
-(define [handle-release w ke] w) ;stub
+(define [handle-release w ke]
+  (cond [(key=? ke "w")
+         (make-world (world-ball w)
+                     (make-paddle
+                      (paddle-pos (world-paddle1 w))
+                      (make-vel 0 0))
+                     (world-paddle2 w))]
+        [(key=? ke "s")
+         (make-world (world-ball w)
+                     (make-paddle
+                      (paddle-pos (world-paddle1 w))
+                      (make-vel 0 0))
+                     (world-paddle2 w))]
+        [(key=? ke "up")
+         (make-world (world-ball w)
+                     (world-paddle1 w)
+                     (make-paddle
+                      (paddle-pos (world-paddle2 w))
+                      (make-vel 0 0)))]
+        [(key=? ke "down")
+         (make-world (world-ball w)
+                     (world-paddle1 w)
+                     (make-paddle
+                      (paddle-pos (world-paddle2 w))
+                      (make-vel 0 0)))]
+        [else w]))
+
 
 ;;Paddle KeyEvent -> Paddle
 ;;move paddle in desired direction
