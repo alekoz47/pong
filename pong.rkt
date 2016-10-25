@@ -44,13 +44,20 @@
   (... (fn-for-pos (ball-pos b))
        (fn-for-vel (ball-vel b))))
 
+(define-struct paddle (pos vel))
+;;Paddle is (make-paddle Position Velocity)
+#;
+(define (fn-for-paddle p)
+  (... (fn-for-pos (paddle-pos p))
+       (fn-for-vel (paddle-vel p))))
+
 (define-struct world (ball paddle1 paddle2))
-;;World is (make-world Ball Pos Pos)
+;;World is (make-world Ball Padddle Paddle)
 #;
 (define (fn-for-world w)
   (... (fn-for-ball (world-ball w))
-       (fn-for-pos (world-paddle1 w))
-       (fn-for-pos (world-paddle2 w))))
+       (fn-for-paddle (world-paddle1 w))
+       (fn-for-paddle (world-paddle2 w))))
 
 ;;================
 ;;Functions:
