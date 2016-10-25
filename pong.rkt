@@ -67,6 +67,7 @@
 
 ;;World -> World
 ;;decides if ball is left/right, up/down, or between
+;;!!!
 (define [tock w]
   (cond [(or (<= (round-five (pos-x (ball-pos (world-ball w))))
                  (+ PADDING (image-width PADDLE)))
@@ -190,6 +191,13 @@
 ;;World KeyEvent -> World
 ;;start moving paddle
 (define [handle-key w ke]
+  (cond [(or (key=? ke "w") (key=? ke "s"))
+         (move-paddle (world-paddle1 w) ke)]
+        [(or (key=? ke "up") (key=? ke "down"))
+         (move-paddle (world-paddle2 w) ke)]
+        [else w]))
+#;
+(define [handle-key w ke]
   (cond [(and (key=? ke "w")
               (>= (- (pos-y (world-paddle1 w))
                      (* 0.5 (image-height PADDLE))) 0))
@@ -232,6 +240,11 @@
 ;;stop moving paddle
 ;;!!!
 (define [handle-release w ke] w) ;stub
+
+;;Paddle KeyEvent -> Paddle
+;;move paddle in desired direction
+;;!!!
+(define [move-paddle p ke] p) ;stub
 
 ;;================
 ;;Run
