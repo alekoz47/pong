@@ -93,18 +93,18 @@
 (define [paddle-ball w]
   (cond [(and (< (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
               (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (world-paddle1 w))
+                  (- (pos-y (paddle-pos (world-paddle1 w)))
                      (/ (image-height PADDLE) 2)))
               (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (world-paddle1 w))
+                  (+ (pos-y (paddle-pos (world-paddle1 w)))
                      (/ (image-height PADDLE) 2))))
          (return w "left")]
         [(and (> (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
               (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (world-paddle2 w))
+                  (- (pos-y (paddle-pos (world-paddle2 w)))
                      (/ (image-height PADDLE) 2)))
               (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (world-paddle2 w))
+                  (+ (pos-y (paddle-pos (world-paddle2 w)))
                      (/ (image-height PADDLE) 2))))
          (return w "right")]
         [else (serve w)]))
@@ -228,39 +228,19 @@
   (cond [(and (key=? ke "w")
               (>= (- (pos-y (world-paddle1 w))
                      (* 0.5 (image-height PADDLE))) 0))
-         (make-world
-          (world-ball w)
-          (make-pos
-           (pos-x (world-paddle1 w))
-           (- (pos-y (world-paddle1 w)) PADDLE-SPEED))
-          (world-paddle2 w))]
+         w]
         [(and (key=? ke "s")
               (<= (+ (pos-y (world-paddle1 w))
                      (* 0.5 (image-height PADDLE))) HEIGHT))
-         (make-world
-          (world-ball w)
-          (make-pos
-           (pos-x (world-paddle1 w))
-           (+ (pos-y (world-paddle1 w)) PADDLE-SPEED))
-          (world-paddle2 w))]
+         w]
         [(and (key=? ke "up")
               (>= (- (pos-y (world-paddle2 w))
                      ( * 0.5 (image-height PADDLE))) 0))
-         (make-world
-          (world-ball w)
-          (world-paddle1 w)
-          (make-pos
-           (pos-x (world-paddle2 w))
-           (- (pos-y (world-paddle2 w)) PADDLE-SPEED)))]
+         w]
         [(and (key=? ke "down")
               (<= (+ (pos-y (world-paddle2 w))
                      (* 0.5 (image-height PADDLE))) HEIGHT))
-         (make-world
-          (world-ball w)
-          (world-paddle1 w)
-          (make-pos
-           (pos-x (world-paddle2 w))
-           (+ (pos-y (world-paddle2 w)) PADDLE-SPEED)))]
+         w]
         [else w]))
 
 ;;World KeyEvent -> World
