@@ -172,8 +172,14 @@
                    (* BALL-SPEED
                       (round-five (vel-y (ball-vel (world-ball w)))))))
                (ball-vel (world-ball w)))
-              (world-paddle1 w)
-              (world-paddle2 w)))
+              (make-paddle
+               (pos-x (paddle-pos (world-paddle1 w)))
+               (- (pos-y (paddle-pos (world-paddle1 w)))
+                  (* PADDLE-SPEED (vel-y (paddle-vel (world-paddle1 w))))))
+              (make-paddle
+               (pos-x (paddle-pos (world-paddle2 w)))
+               (- (pos-y (paddle-pos (world-paddle2 w)))
+                  (* PADDLE-SPEED (vel-y (paddle-vel (world-paddle2 w))))))))
 
 ;;Number -> Number
 ;;truncates inexact number to 5 decimal places
@@ -224,7 +230,7 @@
                       (make-vel 0 -1)))]
         [else w]))
 #;
-(define [handle-key w ke]
+(define [handle-key-use w ke]
   (cond [(and (key=? ke "w")
               (>= (- (pos-y (world-paddle1 w))
                      (* 0.5 (image-height PADDLE))) 0))
@@ -272,12 +278,6 @@
                       (make-vel 0 0)))]
         [else w]))
 
-
-;;Paddle KeyEvent -> Paddle
-;;move paddle in desired direction
-;;!!!
-(define [move-paddle p ke] p) ;stub
-
 ;;================
 ;;Run
 
@@ -285,5 +285,7 @@
  (make-world
   (make-ball (make-pos (/ WIDTH 2) (/ HEIGHT 2))
              (make-vel (- 0 (/ 1 (sqrt 2))) (- 0 (/ 1 (sqrt 2)))))
-  (make-pos (/ (image-width PADDLE) 2) 300)
-  (make-pos (- WIDTH (/ (image-width PADDLE) 2)) 300)))
+  (make-paddle (make-pos (/ (image-width PADDLE) 2) (/ HEIGHT 2))
+               (make-vel 0 0))
+  (make-paddle (make-pos (- WIDTH (/ (image-width PADDLE) 2)) (/ HEIGHT 2))
+               (make-vel 0 0))))
