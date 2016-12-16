@@ -17,7 +17,7 @@
 (define TICK-SPEED 0.015)
 (define BALL-SPEED 5)
 (define PADDLE-SPEED 10)
-(define PADDLE-FACTOR 1.5)
+(define PADDLE-FACTOR 1.25)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
 ;;================================
