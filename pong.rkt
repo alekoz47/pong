@@ -78,14 +78,13 @@
          (advance-element b))))
 
 ;;Element Element -> Element
-;;!!!
 (define (left/right-ball b p)
   (cond ((and ((>= (posn-y (element-pos b))
                    (- (posn-y (element-pos p))
-                      (/ (image-height PADDLE) 2)))
+                      (/ (image-height PADDLE) 2))))
                (<= (posn-y (element-pos b))
                    (+ (posn-y (element-pos p))
-                      (/ (image-height PADDLE) 2)))))
+                      (/ (image-height PADDLE) 2))))
          (advance-element
           (make-element (element-pos b)
                         (make-posn (- 0 (posn-x (element-vel b)))
@@ -94,7 +93,7 @@
         (else
          (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
                        (reset-vel p)
-                       (make-speed 10)))))
+                       10))))
 
 ;;Element -> Posn
 (define (reset-vel p)
@@ -131,6 +130,7 @@
 
 ;;World KeyEvent -> World
 ;;start moving paddle
+#;
 (define (handle-key w ke)
   (cond ((key=? ke "w")
          (make-world (world-ball w)
@@ -179,6 +179,7 @@
 
 ;;World KeyEvent -> World
 ;;stop moving paddle
+#;
 (define (handle-release w ke)
   (cond ((key=? ke "w")
          (make-world (world-ball w)
@@ -209,6 +210,7 @@
 ;;================================
 ;;Run
 
+#;
 (main
  (make-world
   (make-ball (make-pos (/ WIDTH 2) (/ HEIGHT 2))
