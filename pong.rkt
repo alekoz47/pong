@@ -55,7 +55,8 @@
 
 ;;World -> Element
 (define (choose-paddle w)
-  (cond ((<= (/ WIDTH 2) (posn-x (element-pos (world-ball w))))
+  (cond ((<= (/ WIDTH 2)
+             (posn-x (element-pos (world-ball w))))
          (world-paddle1 w))
         (else
          (world-paddle2 w))))
@@ -81,7 +82,12 @@
 
 ;;Element -> Element
 ;;!!!
-(define (up/down-ball b) b) ;stub
+(define (up/down-ball b)
+  (advance-element
+   (make-element (element-pos b)
+                 (make-posn (posn-x (element-pos b))
+                            (- 0 (posn-y (element-pos b))))
+                 (element-speed b))))
 
 ;;Element -> Element
 (define (advance-element b)
