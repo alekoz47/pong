@@ -27,13 +27,12 @@
 ;;Assume:
 ;;- Vel Posn -1 -> 1
 
-(define-struct world (ball paddle1 paddle2 score))
+(define-struct world (ball paddle1 paddle2))
 ;;World is (make-world Element Element Element Posn)
 ;;Assume:
 ;;- Paddle1 && Paddle2 Pos X fixed
 ;;- Paddle1 && Paddle2 Speed fixed
 ;;- Paddle1 && Paddle2 Vel -1 || 1
-;;- Score Posn X && Score Posn Y 0 -> 7
 
 ;;================================
 ;;Functions:
@@ -82,9 +81,9 @@
   (cond ((and ((>= (posn-y (element-pos b))
                    (- (posn-y (element-pos p))
                       (/ (image-height PADDLE) 2))))
-               (<= (posn-y (element-pos b))
-                   (+ (posn-y (element-pos p))
-                      (/ (image-height PADDLE) 2))))
+              (<= (posn-y (element-pos b))
+                  (+ (posn-y (element-pos p))
+                     (/ (image-height PADDLE) 2))))
          (advance-element
           (make-element (element-pos b)
                         (make-posn (- 0 (posn-x (element-vel b)))
@@ -129,53 +128,26 @@
                 MTS))
 
 ;;World KeyEvent -> World
-;;start moving paddle
-#;
 (define (handle-key w ke)
-  (cond ((key=? ke "w")
+  (cond ((or (key=? ke "w") (key=? ke "s"))
          (make-world (world-ball w)
-                     (make-paddle
-                      (paddle-pos (world-paddle1 w))
-                      (make-vel 0 1))
+                     (set-paddle ke (world-paddle1 w))
                      (world-paddle2 w)))
-        ((key=? ke "s")
-         (make-world (world-ball w)
-                     (make-paddle
-                      (paddle-pos (world-paddle1 w))
-                      (make-vel 0 -1))
-                     (world-paddle2 w)))
-        ((key=? ke "up")
+        ((or (key=? ke "up") (key=? ke "down"))
          (make-world (world-ball w)
                      (world-paddle1 w)
-                     (make-paddle
-                      (paddle-pos (world-paddle2 w))
-                      (make-vel 0 1))))
-        ((key=? ke "down")
-         (make-world (world-ball w)
-                     (world-paddle1 w)
-                     (make-paddle
-                      (paddle-pos (world-paddle2 w))
-                      (make-vel 0 -1))))
+                     (set-paddle ke (world-paddle2 w))))
         (else w)))
-#;
-(define (handle-key-use w ke)
-  (cond ((and (key=? ke "w")
-              (>= (- (pos-y (world-paddle1 w))
-                     (* 0.5 (image-height PADDLE))) 0))
-         w)
-        ((and (key=? ke "s")
-              (<= (+ (pos-y (world-paddle1 w))
-                     (* 0.5 (image-height PADDLE))) HEIGHT))
-         w)
-        ((and (key=? ke "up")
-              (>= (- (pos-y (world-paddle2 w))
-                     ( * 0.5 (image-height PADDLE))) 0))
-         w)
-        ((and (key=? ke "down")
-              (<= (+ (pos-y (world-paddle2 w))
-                     (* 0.5 (image-height PADDLE))) HEIGHT))
-         w)
-        (else w)))
+
+;;KeyEvent Paddle -> Paddle
+(define (set-paddle ke p)
+  (if (or (key=? ke "w") (key=? ke "up"))
+      (make-paddle (element-pos p)
+                   (make-posn 0 1)
+                   (element-speed p))
+      (make-paddle (element-pos p_)
+                   (make-posn 0 -1)
+                   (element-speed p))))
 
 ;;World KeyEvent -> World
 ;;stop moving paddle
