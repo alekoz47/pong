@@ -150,34 +150,26 @@
                    (element-speed p))))
 
 ;;World KeyEvent -> World
-;;stop moving paddle
-#;
 (define (handle-release w ke)
-  (cond ((key=? ke "w")
+  (cond ((or (key=? ke "w") (key=? ke "s"))
          (make-world (world-ball w)
-                     (make-paddle
-                      (paddle-pos (world-paddle1 w))
-                      (make-vel 0 0))
+                     (reset-paddle ke (world-paddle1 w))
                      (world-paddle2 w)))
-        ((key=? ke "s")
-         (make-world (world-ball w)
-                     (make-paddle
-                      (paddle-pos (world-paddle1 w))
-                      (make-vel 0 0))
-                     (world-paddle2 w)))
-        ((key=? ke "up")
+        ((or (key=? ke "up") (key=? ke "down"))
          (make-world (world-ball w)
                      (world-paddle1 w)
-                     (make-paddle
-                      (paddle-pos (world-paddle2 w))
-                      (make-vel 0 0))))
-        ((key=? ke "down")
-         (make-world (world-ball w)
-                     (world-paddle1 w)
-                     (make-paddle
-                      (paddle-pos (world-paddle2 w))
-                      (make-vel 0 0))))
+                     (reset-paddle ke (world-paddle2 w))))
         (else w)))
+
+;;KeyEvent Paddle -> Paddle
+(define (reset-paddle ke p)
+  (if (or (key=? ke "w") (key=? ke "up"))
+      (make-paddle (element-pos p)
+                   (make-posn 0 0)
+                   (element-speed p))
+      (make-paddle (element-pos p_)
+                   (make-posn 0 0)
+                   (element-speed p))))
 
 ;;================================
 ;;Run
