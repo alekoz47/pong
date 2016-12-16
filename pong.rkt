@@ -11,12 +11,13 @@
 
 (define WIDTH 1000)
 (define HEIGHT 600)
-(define BALL (circle 20 "solid" "white"))
-(define PADDLE (rectangle (/ (image-width BALL) 4) 150 "solid" "white"))
-(define PADDING (/ (image-width BALL) 2))
+(define BALL (circle 10 "solid" "white"))
+(define PADDLE (rectangle (/ (image-width BALL) 2) 75 "solid" "white"))
+(define PADDING (/ (image-width BALL)))
 (define TICK-SPEED 0.015)
 (define BALL-SPEED 5)
 (define PADDLE-SPEED 10)
+(define PADDLE-FACTOR 1.5)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
 ;;================================
@@ -88,7 +89,7 @@
           (make-element (element-pos b)
                         (make-posn (- 0 (posn-x (element-vel b)))
                                    (posn-y (element-vel b)))
-                        (element-speed b))))
+                        (* PADDLE-FACTOR (element-speed b)))))
         (else
          (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
                        (reset-vel p)
@@ -131,7 +132,7 @@
          (advance-element
           (make-element (element-pos p)
                         (make-posn (posn-x (element-vel p))
-                                   (- 0 (posn-y (element-vel p))))
+                                   (- 0 (* 2 (posn-y (element-vel p)))))
                         (element-speed p))))))
 
 ;;World -> Image
@@ -194,13 +195,13 @@
   (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
                 (make-posn 0.701 -0.701)
                 BALL-SPEED)
-  (make-element (make-posn (+ (/ (image-width BALL) 4)
+  (make-element (make-posn (+ (/ (image-width BALL) 2)
                               (/ (image-width PADDLE) 2))
                            (/ HEIGHT 2))
                 (make-posn 0 0)
                 PADDLE-SPEED)
   (make-element (make-posn (- WIDTH
-                              (/ (image-width BALL) 4)
+                              (/ (image-width BALL) 2)
                               (/ (image-width PADDLE) 2))
                            (/ HEIGHT 2))
                 (make-posn 0 0)
