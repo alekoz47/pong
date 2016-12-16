@@ -15,7 +15,7 @@
 (define PADDLE (rectangle (/ (image-width BALL) 4) 150 "solid" "white"))
 (define PADDING (/ (image-width BALL) 2))
 (define TICK-SPEED 0.015)
-(define BALL-SPEED 10)
+(define BALL-SPEED 5)
 (define PADDLE-SPEED 40)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
@@ -78,9 +78,9 @@
 
 ;;Element Element -> Element
 (define (left/right-ball b p)
-  (cond ((and ((>= (posn-y (element-pos b))
-                   (- (posn-y (element-pos p))
-                      (/ (image-height PADDLE) 2))))
+  (cond ((and (>= (posn-y (element-pos b))
+                  (- (posn-y (element-pos p))
+                     (/ (image-height PADDLE) 2)))
               (<= (posn-y (element-pos b))
                   (+ (posn-y (element-pos p))
                      (/ (image-height PADDLE) 2))))
@@ -113,10 +113,11 @@
 (define (advance-element b)
   (make-element (make-posn (+ (posn-x (element-pos b))
                               (* (element-speed b)
-                                 (posn-x (element-vel b)))))
-                (make-posn (- (posn-y (element-pos b))
+                                 (posn-x (element-vel b))))
+                           (- (posn-y (element-pos b))
                               (* (element-speed b)
                                  (posn-y (element-vel b)))))
+                (element-vel b)
                 (element-speed b)))
 
 ;;World -> Image
@@ -142,12 +143,12 @@
 ;;KeyEvent Paddle -> Paddle
 (define (set-paddle ke p)
   (if (or (key=? ke "w") (key=? ke "up"))
-      (make-paddle (element-pos p)
-                   (make-posn 0 1)
-                   (element-speed p))
-      (make-paddle (element-pos p_)
-                   (make-posn 0 -1)
-                   (element-speed p))))
+      (make-element (element-pos p)
+                    (make-posn 0 1)
+                    (element-speed p))
+      (make-element (element-pos p)
+                    (make-posn 0 -1)
+                    (element-speed p))))
 
 ;;World KeyEvent -> World
 (define (handle-release w ke)
@@ -164,12 +165,12 @@
 ;;KeyEvent Paddle -> Paddle
 (define (reset-paddle ke p)
   (if (or (key=? ke "w") (key=? ke "up"))
-      (make-paddle (element-pos p)
-                   (make-posn 0 0)
-                   (element-speed p))
-      (make-paddle (element-pos p_)
-                   (make-posn 0 0)
-                   (element-speed p))))
+      (make-element (element-pos p)
+                    (make-posn 0 0)
+                    (element-speed p))
+      (make-element (element-pos p)
+                    (make-posn 0 0)
+                    (element-speed p))))
 
 ;;================================
 ;;Run
@@ -180,7 +181,7 @@
                 (make-posn 0.701 -0.701)
                 BALL-SPEED)
   (make-element (make-posn (+ (/ (image-width BALL) 4)
-                              (/ (image-width PADDLE 2)))
+                              (/ (image-width PADDLE) 2))
                            (/ HEIGHT 2))
                 (make-posn 0 0)
                 PADDLE-SPEED)
