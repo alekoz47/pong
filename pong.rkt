@@ -174,12 +174,19 @@
 ;;================================
 ;;Run
 
-#;
 (main
  (make-world
-  (make-ball (make-pos (/ WIDTH 2) (/ HEIGHT 2))
-             (make-vel (- 0 (/ 1 (sqrt 2))) (- 0 (/ 1 (sqrt 2)))))
-  (make-paddle (make-pos (/ (image-width PADDLE) 2) (/ HEIGHT 2))
-               (make-vel 0 0))
-  (make-paddle (make-pos (- WIDTH (/ (image-width PADDLE) 2)) (/ HEIGHT 2))
-               (make-vel 0 0))))
+  (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
+                (make-posn 0.701 -0.701)
+                BALL-SPEED)
+  (make-element (make-posn (+ (/ (image-width BALL) 4)
+                              (/ (image-width PADDLE 2)))
+                           (/ HEIGHT 2))
+                (make-posn 0 0)
+                PADDLE-SPEED)
+  (make-element (make-posn (- WIDTH
+                              (/ (image-width BALL) 4)
+                              (/ (image-width PADDLE) 2))
+                           (/ HEIGHT 2))
+                (make-posn 0 0)
+                PADDLE-SPEED)))
