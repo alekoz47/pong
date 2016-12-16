@@ -85,8 +85,8 @@
 (define (up/down-ball b)
   (advance-element
    (make-element (element-pos b)
-                 (make-posn (posn-x (element-pos b))
-                            (- 0 (posn-y (element-pos b))))
+                 (make-posn (posn-x (element-vel b))
+                            (- 0 (posn-y (element-vel b))))
                  (element-speed b))))
 
 ;;Element -> Element
@@ -119,28 +119,6 @@
                      (/ (image-height PADDLE) 2))))
          (return w "right"))
         (else (serve w))))
-
-;;World -> World String
-;;bounces ball off wall
-(define (wall-ball w)
-  (make-world
-   (make-ball
-    (ball-reset (world-ball w) "top/bottom")
-    (make-vel (round-five (vel-x (ball-vel (world-ball w))))
-              (- 0 (round-five (vel-y (ball-vel (world-ball w)))))))
-   (world-paddle1 w)
-   (world-paddle2 w)))
-
-;;World String -> World
-;;builds new worldstate after ball bounce, inverts velocity
-(define (return w s)
-  (make-world
-   (make-ball
-    (ball-reset (world-ball w) s)
-    (make-vel (- 0 (round-five (vel-x (ball-vel (world-ball w)))))
-              (round-five (vel-y (ball-vel (world-ball w))))))
-   (world-paddle1 w)
-   (world-paddle2 w)))
 
 ;;Pos String -> Pos
 ;;resets ball position
