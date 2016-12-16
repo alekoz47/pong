@@ -16,7 +16,7 @@
 (define PADDING (/ (image-width BALL) 2))
 (define TICK-SPEED 0.015)
 (define BALL-SPEED 5)
-(define PADDLE-SPEED 40)
+(define PADDLE-SPEED 10)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
 ;;================================
@@ -55,7 +55,7 @@
 
 ;;World -> Element
 (define (choose-paddle w)
-  (cond ((<= (/ WIDTH 2)
+  (cond ((>= (/ WIDTH 2)
              (posn-x (element-pos (world-ball w))))
          (world-paddle1 w))
         (else
@@ -121,13 +121,14 @@
                 (element-speed e)))
 
 ;;Element -> Element
-(define (move-paddle p)
+(define (move-paddle p) (advance-element p))
+  #;
   (cond ((and (<= (- HEIGHT (/ (image-height PADDLE) 2))
                   (posn-y (element-pos p)))
               (>= (/ (image-height PADDLE) 2)
                   (posn-y (element-pos p))))
          (advance-element p))
-        (else p)))
+        (else p))
 
 ;;World -> Image
 (define (render w)
