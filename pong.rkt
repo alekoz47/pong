@@ -50,8 +50,8 @@
 (define (tock w)
   (make-world (move-ball (world-ball w)
                          (choose-paddle w))
-              (world-paddle1 w)
-              (world-paddle2 w)))
+              (move-paddle (world-paddle1 w))
+              (move-paddle (world-paddle2 w))))
 
 ;;World -> Element
 (define (choose-paddle w)
@@ -92,7 +92,7 @@
         (else
          (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
                        (reset-vel p)
-                       10))))
+                       BALL-SPEED))))
 
 ;;Element -> Posn
 (define (reset-vel p)
@@ -110,15 +110,24 @@
                  (element-speed b))))
 
 ;;Element -> Element
-(define (advance-element b)
-  (make-element (make-posn (+ (posn-x (element-pos b))
-                              (* (element-speed b)
-                                 (posn-x (element-vel b))))
-                           (- (posn-y (element-pos b))
-                              (* (element-speed b)
-                                 (posn-y (element-vel b)))))
-                (element-vel b)
-                (element-speed b)))
+(define (advance-element e)
+  (make-element (make-posn (+ (posn-x (element-pos e))
+                              (* (element-speed e)
+                                 (posn-x (element-vel e))))
+                           (- (posn-y (element-pos e))
+                              (* (element-speed e)
+                                 (posn-y (element-vel e)))))
+                (element-vel e)
+                (element-speed e)))
+
+;;Element -> Element
+(define (move-paddle p)
+  (cond ((and (<= (- HEIGHT (/ (image-height PADDLE) 2))
+                  (posn-y (element-pos p)))
+              (>= (/ (image-height PADDLE) 2)
+                  (posn-y (element-pos p))))
+         (advance-element p))
+        (else p)))
 
 ;;World -> Image
 (define (render w)
@@ -173,7 +182,7 @@
                     (element-speed p))))
 
 ;;================================
-;;Run
+;;Run:
 
 (main
  (make-world
