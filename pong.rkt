@@ -122,18 +122,11 @@
                 (element-speed b)))
 
 ;;World -> Image
-;;render world on screen at positions
 (define (render w)
   (place-images (list BALL PADDLE PADDLE)
-                (list (make-posn
-                       (pos-x (ball-pos (world-ball w)))
-                       (pos-y (ball-pos (world-ball w))))
-                      (make-posn
-                       (pos-x (paddle-pos (world-paddle1 w)))
-                       (pos-y (paddle-pos (world-paddle1 w))))
-                      (make-posn
-                       (pos-x (paddle-pos (world-paddle2 w)))
-                       (pos-y (paddle-pos (world-paddle2 w)))))
+                (list (element-pos (world-ball w))
+                      (element-pos (world-paddle1 w))
+                      (element-pos (world-paddle2 w)))
                 MTS))
 
 ;;World KeyEvent -> World
