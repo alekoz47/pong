@@ -62,18 +62,18 @@
 
 ;;Element Element -> Element
 (define (move-ball b p)
-  (cond ((or (<= (posn-x (ball-pos b))
+  (cond ((or (<= (posn-x (element-pos b))
                  (+ PADDING (image-width PADDLE)))
-             (>= (posn-x (ball-pos b))
+             (>= (posn-x (element-pos b))
                  (- WIDTH (+ PADDING (image-width PADDLE)))))
          (left/right-ball b p))
-        ((or (>= (posn-y (ball-pos b))
+        ((or (>= (posn-y (element-pos b))
                  (- HEIGHT PADDING))
-             (<= (posn-y (ball-pos b))
+             (<= (posn-y (element-pos b))
                  PADDING))
          (up/down-ball b))
         (else
-         (advance-ball b))))
+         (advance-element b))))
 
 ;;Element Element -> Element
 ;;!!!
@@ -84,8 +84,14 @@
 (define (up/down-ball b) b) ;stub
 
 ;;Element -> Element
-;;!!!
-(define (advance-ball b) b) ;stub
+(define (advance-element b)
+  (make-element (make-posn (+ (posn-x (element-pos b))
+                              (* (element-speed b)
+                                 (posn-x (element-vel b)))))
+                (make-posn (- (posn-y (element-pos b))
+                              (* (element-speed b)
+                                 (posn-y (element-vel b)))))
+                (element-speed b)))
 
 ;;World -> World String
 ;;bounces ball if on paddle, otherwise serve
@@ -158,27 +164,6 @@
                    (make-vel (/ 1 (sqrt 2)) (/ 1 (sqrt 2))))
                   (world-paddle1 w)
                   (world-paddle2 w))))
-
-;;World -> World
-;;advances ball position with ball velocity and speed
-(define (move-ball w)
-  (make-world (make-ball
-               (make-pos
-                (+ (round-five (pos-x (ball-pos (world-ball w))))
-                   (* BALL-SPEED
-                      (round-five (vel-x (ball-vel (world-ball w))))))
-                (- (round-five (pos-y (ball-pos (world-ball w))))
-                   (* BALL-SPEED
-                      (round-five (vel-y (ball-vel (world-ball w)))))))
-               (ball-vel (world-ball w)))
-              (make-paddle
-               (pos-x (paddle-pos (world-paddle1 w)))
-               (- (pos-y (paddle-pos (world-paddle1 w)))
-                  (* PADDLE-SPEED (vel-y (paddle-vel (world-paddle1 w))))))
-              (make-paddle
-               (pos-x (paddle-pos (world-paddle2 w)))
-               (- (pos-y (paddle-pos (world-paddle2 w)))
-                  (* PADDLE-SPEED (vel-y (paddle-vel (world-paddle2 w))))))))
 
 ;;Number -> Number
 ;;truncates inexact number to 5 decimal places
