@@ -15,6 +15,7 @@
 (define PADDLE (rectangle (/ (image-width BALL) 4) 150 "solid" "white"))
 (define PADDING (/ (image-width BALL) 2))
 (define TICK-SPEED 0.015)
+(define BALL-SPEED 10)
 (define PADDLE-SPEED 40)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
@@ -78,10 +79,31 @@
 
 ;;Element Element -> Element
 ;;!!!
-(define (left/right-ball b p) b) ;stub
+(define (left/right-ball b p)
+  (cond ((and ((>= (posn-y (element-pos b))
+                   (- (posn-y (element-pos p))
+                      (/ (image-height PADDLE) 2)))
+               (<= (posn-y (element-pos b))
+                   (+ (posn-y (element-pos p))
+                      (/ (image-height PADDLE) 2)))))
+         (advance-element
+          (make-element (element-pos b)
+                        (make-posn (- 0 (posn-x (element-vel b)))
+                                   (posn-y (element-vel b)))
+                        (element-speed b))))
+        (else
+         (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
+                       (reset-vel p)
+                       (make-speed 10)))))
+
+;;Element -> Posn
+(define (reset-vel p)
+  (cond ((<= (/ WIDTH 2) (posn-x (element-pos p)))
+         (make-posn 0.707 -0.707))
+        (else
+         (make-posn -0.707 0.707))))
 
 ;;Element -> Element
-;;!!!
 (define (up/down-ball b)
   (advance-element
    (make-element (element-pos b)
@@ -98,61 +120,6 @@
                               (* (element-speed b)
                                  (posn-y (element-vel b)))))
                 (element-speed b)))
-
-;;World -> World String
-;;bounces ball if on paddle, otherwise serve
-(define (paddle-ball w)
-  (cond ((and (< (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
-              (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (paddle-pos (world-paddle1 w)))
-                     (/ (image-height PADDLE) 2)))
-              (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (paddle-pos (world-paddle1 w)))
-                     (/ (image-height PADDLE) 2))))
-         (return w "left"))
-        ((and (> (pos-x (ball-pos (world-ball w))) (/ WIDTH 2))
-              (>= (pos-y (ball-pos (world-ball w)))
-                  (- (pos-y (paddle-pos (world-paddle2 w)))
-                     (/ (image-height PADDLE) 2)))
-              (<= (pos-y (ball-pos (world-ball w)))
-                  (+ (pos-y (paddle-pos (world-paddle2 w)))
-                     (/ (image-height PADDLE) 2))))
-         (return w "right"))
-        (else (serve w))))
-
-;;Pos String -> Pos
-;;resets ball position
-(define (ball-reset wb s)
-  (cond ((or (string=? s "left") (string=? s "right"))
-         (make-pos (- (round-five (pos-x (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
-                   (+ (round-five (pos-y (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-y (ball-vel wb)))))))
-        ((string=? s "top/bottom")
-         (make-pos (+ (round-five (pos-x (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-x (ball-vel wb)))))
-                   (+ (round-five (pos-y (ball-pos wb)))
-                      (* BALL-SPEED (round-five (vel-y (ball-vel wb)))))))))
-
-;;World -> World
-;;switches angle randomly
-(define (serve w)
-  (if (= (random 2) 1)
-      (make-world (make-ball
-                   (make-pos (/ WIDTH 2) (/ HEIGHT 2))
-                   (make-vel (- 0 (/ 1 (sqrt 2))) (/ 1 (sqrt 2))))
-                  (world-paddle1 w)
-                  (world-paddle2 w))
-      (make-world (make-ball
-                   (make-pos (/ WIDTH 2) (/ HEIGHT 2))
-                   (make-vel (/ 1 (sqrt 2)) (/ 1 (sqrt 2))))
-                  (world-paddle1 w)
-                  (world-paddle2 w))))
-
-;;Number -> Number
-;;truncates inexact number to 5 decimal places
-(define (round-five n)
-  (/ (round (* n (expt 10 5))) (expt 10 5)))
 
 ;;World -> Image
 ;;render world on screen at positions
