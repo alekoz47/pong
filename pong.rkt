@@ -6,60 +6,34 @@
 
 ;;simple two-player pong
 
-;;================
+;;================================
 ;;Constants:
 
 (define WIDTH 1000)
 (define HEIGHT 600)
 (define BALL (circle 20 "solid" "white"))
-(define PADDLE (rectangle (/ (image-width BALL) 2) 150 "solid" "white"))
+(define PADDLE (rectangle (/ (image-width BALL) 4) 150 "solid" "white"))
 (define PADDING (/ (image-width BALL) 2))
 (define TICK-SPEED 0.015)
 (define PADDLE-SPEED 40)
-(define BALL-SPEED 10)
 (define MTS (empty-scene WIDTH HEIGHT "black"))
 
-;;================
+;;================================
 ;;Data definitions:
 
-(define-struct pos (x y))
-;;Position is (make-pos Number[0, (- WIDTH PADDING)]
-;;                      Number[0, (- HEIGHT PADDING)])
-#;
-(define (fn-for-pos p)
-  (... (pos-x p)
-       (pos-y p)))
-
-(define-struct vel (x y))
-;;Velocity is (make-vel Number[-1, 1] Number[-1, 1])
-#;
-(define (fn-for-vel v)
-  (... (vel-x v)
-       (vel-y v)))
-
-(define-struct ball (pos vel))
-;;Ball is (make-ball Position Velocity)
-#;
-(define (fn-for-ball b)
-  (... (fn-for-pos (ball-pos b))
-       (fn-for-vel (ball-vel b))))
-
-(define-struct paddle (pos vel))
-;;Paddle is (make-paddle Position Velocity)
-#;
-(define (fn-for-paddle p)
-  (... (fn-for-pos (paddle-pos p))
-       (fn-for-vel (paddle-vel p))))
+(define-struct element (pos vel speed))
+;;Element is (make-element Posn Posn Integer)
+;;Assume:
+;;- Vel Posn -1 -> 1
 
 (define-struct world (ball paddle1 paddle2))
-;;World is (make-world Ball Padddle Paddle)
-#;
-(define (fn-for-world w)
-  (... (fn-for-ball (world-ball w))
-       (fn-for-paddle (world-paddle1 w))
-       (fn-for-paddle (world-paddle2 w))))
+;;World is (make-world Element Element Element)
+;;Assume:
+;;- Paddle1 && Paddle2 Pos X fixed
+;;- Paddle1 && Paddle2 Speed fixed
+;;- Paddle1 && Paddle2 Vel -1 || 1
 
-;;================
+;;================================
 ;;Functions:
 
 ;;World -> World
@@ -278,7 +252,7 @@
                       (make-vel 0 0)))]
         [else w]))
 
-;;================
+;;================================
 ;;Run
 
 (main
