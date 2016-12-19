@@ -100,12 +100,17 @@
          (advance-element
           (make-element (element-pos b)
                         (make-posn (- 0 (posn-x (element-vel b)))
-                                   (posn-y (element-vel b)))
+                                   (* (bounce-factor p) (posn-y (element-vel b))))
                         (* PADDLE-FACTOR (element-speed b)))))
         (else
          (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
                        (reset-vel p)
                        BALL-SPEED))))
+
+;;Element Element -> Element
+(define (bounce-factor p)
+  (if (zero? (posn-y (element-vel p)))
+      1 1.25))
 
 ;;Element -> Posn
 (define (reset-vel p)
