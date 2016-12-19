@@ -12,20 +12,22 @@
 (define WIDTH 1000)
 (define HEIGHT 600)
 (define BALL (circle 10 "solid" "white"))
-(define PADDLE (rectangle (/ (image-width BALL) 2) 75 "solid" "white"))
+(define PADDING (/ (image-width BALL) 2))
+(define PADDLE (rectangle PADDING 75 "solid" "white"))
 (define DIVIDER
   (local ((define (divider-acc img acc)
             (cond ((>= (image-height img) HEIGHT) img)
                   (else
                    (if (= (modulo acc 2) 0)
                        (divider-acc
-                        (above (rectangle 10 40 "solid" "white") img)
+                        (above (rectangle PADDING
+                                          40 "solid" "white") img)
                         (add1 acc))
                        (divider-acc
-                        (above (rectangle 10 40 "solid" "black") img)
+                        (above (rectangle PADDING
+                                          40 "solid" "black") img)
                         (add1 acc)))))))
-    (divider-acc (rectangle 10 40 "solid" "black") 0)))
-(define PADDING (/ (image-width BALL)))
+    (divider-acc (rectangle PADDING 40 "solid" "black") 0)))
 (define TICK-SPEED 0.015)
 (define BALL-SPEED 5)
 (define PADDLE-SPEED 10)
@@ -77,9 +79,9 @@
 ;;Element Element -> Element
 (define (move-ball b p)
   (cond ((or (<= (posn-x (element-pos b))
-                 (+ PADDING (image-width PADDLE)))
+                 (* 3 PADDING))
              (>= (posn-x (element-pos b))
-                 (- WIDTH (+ PADDING (image-width PADDLE)))))
+                 (- WIDTH (* 3 PADDING))))
          (left/right-ball b p))
         ((or (>= (posn-y (element-pos b))
                  (- HEIGHT PADDING))
@@ -208,14 +210,12 @@
   (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
                 (make-posn 0.701 -0.701)
                 BALL-SPEED)
-  (make-element (make-posn (+ (/ (image-width BALL) 2)
-                              (/ (image-width PADDLE) 2))
+  (make-element (make-posn (* (/ 3 2) PADDING)
                            (/ HEIGHT 2))
                 (make-posn 0 0)
                 PADDLE-SPEED)
   (make-element (make-posn (- WIDTH
-                              (/ (image-width BALL) 2)
-                              (/ (image-width PADDLE) 2))
+                              (* (/ 3 2) PADDING))
                            (/ HEIGHT 2))
                 (make-posn 0 0)
                 PADDLE-SPEED)))
