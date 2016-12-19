@@ -13,6 +13,18 @@
 (define HEIGHT 600)
 (define BALL (circle 10 "solid" "white"))
 (define PADDLE (rectangle (/ (image-width BALL) 2) 75 "solid" "white"))
+(define DIVIDER
+  (local ((define (divider-acc img acc)
+            (cond ((>= (image-height img) HEIGHT) img)
+                  (else
+                   (if (= (modulo acc 2) 0)
+                       (divider-acc
+                        (above (rectangle 10 40 "solid" "white") img)
+                        (add1 acc))
+                       (divider-acc
+                        (above (rectangle 10 40 "solid" "black") img)
+                        (add1 acc)))))))
+    (divider-acc (rectangle 10 40 "solid" "black") 0)))
 (define PADDING (/ (image-width BALL)))
 (define TICK-SPEED 0.015)
 (define BALL-SPEED 5)
@@ -137,11 +149,12 @@
 
 ;;World -> Image
 (define (render w)
-  (place-images (list BALL PADDLE PADDLE)
-                (list (element-pos (world-ball w))
-                      (element-pos (world-paddle1 w))
-                      (element-pos (world-paddle2 w)))
-                MTS))
+  (overlay DIVIDER
+           (place-images (list BALL PADDLE PADDLE)
+                         (list (element-pos (world-ball w))
+                               (element-pos (world-paddle1 w))
+                               (element-pos (world-paddle2 w)))
+                         MTS)))
 
 ;;World KeyEvent -> World
 (define (handle-key w ke)
