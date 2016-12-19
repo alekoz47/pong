@@ -109,7 +109,7 @@
 ;;Element Element -> Element
 (define (bounce-factor p)
   (if (zero? (posn-y (element-vel p)))
-      1 1.25))
+      1 2))
 
 ;;Element -> Posn
 (define (reset-vel p)
