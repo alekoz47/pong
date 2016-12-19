@@ -91,21 +91,20 @@
 
 ;;Element Element -> Element
 (define (left/right-ball b p)
-  (cond ((and (>= (posn-y (element-pos b))
-                  (- (posn-y (element-pos p))
-                     (/ (image-height PADDLE) 2)))
-              (<= (posn-y (element-pos b))
-                  (+ (posn-y (element-pos p))
-                     (/ (image-height PADDLE) 2))))
-         (advance-element
-          (make-element (element-pos b)
-                        (make-posn (- 0 (posn-x (element-vel b)))
-                                   (* (bounce-factor p) (posn-y (element-vel b))))
-                        (* PADDLE-FACTOR (element-speed b)))))
-        (else
-         (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
-                       (reset-vel p)
-                       BALL-SPEED))))
+  (if (and (>= (posn-y (element-pos b))
+               (- (posn-y (element-pos p))
+                  (/ (image-height PADDLE) 2)))
+           (<= (posn-y (element-pos b))
+               (+ (posn-y (element-pos p))
+                  (/ (image-height PADDLE) 2))))
+      (advance-element
+       (make-element (element-pos b)
+                     (make-posn (- 0 (posn-x (element-vel b)))
+                                (* (bounce-factor p) (posn-y (element-vel b))))
+                     (* PADDLE-FACTOR (element-speed b))))
+      (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
+                    (reset-vel p)
+                    BALL-SPEED)))
 
 ;;Element Element -> Element
 (define (bounce-factor p)
@@ -142,17 +141,16 @@
 
 ;;Element -> Element
 (define (move-paddle p)
-  (cond ((and (>= (- HEIGHT (/ (image-height PADDLE) 2))
-                  (posn-y (element-pos p)))
-              (<= (/ (image-height PADDLE) 2)
-                  (posn-y (element-pos p))))
-         (advance-element p))
-        (else
-         (advance-element
-          (make-element (element-pos p)
-                        (make-posn (posn-x (element-vel p))
-                                   (- 0 (* 2 (posn-y (element-vel p)))))
-                        (element-speed p))))))
+  (if (and (>= (- HEIGHT (/ (image-height PADDLE) 2))
+               (posn-y (element-pos p)))
+           (<= (/ (image-height PADDLE) 2)
+               (posn-y (element-pos p))))
+      (advance-element p)
+      (advance-element
+       (make-element (element-pos p)
+                     (make-posn (posn-x (element-vel p))
+                                (- 0 (* 2 (posn-y (element-vel p)))))
+                     (element-speed p)))))
 
 ;;World -> Image
 (define (render w)
