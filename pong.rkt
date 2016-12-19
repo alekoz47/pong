@@ -15,19 +15,19 @@
 (define PADDING (/ (image-width BALL) 2))
 (define PADDLE (rectangle PADDING 75 "solid" "white"))
 (define DIVIDER
-  (local ((define (divider-acc img acc)
+  (local ((define white-rectangle 
+            (rectangle PADDING 40 "solid" "white"))
+          (define black-rectangle 
+            (rectangle PADDING 40 "solid" "black"))
+          (define (divider-acc img acc)
             (cond ((>= (image-height img) HEIGHT) img)
                   (else
                    (if (= (modulo acc 2) 0)
-                       (divider-acc
-                        (above (rectangle PADDING
-                                          40 "solid" "white") img)
-                        (add1 acc))
-                       (divider-acc
-                        (above (rectangle PADDING
-                                          40 "solid" "black") img)
-                        (add1 acc)))))))
-    (divider-acc (rectangle PADDING 40 "solid" "black") 0)))
+                       (divider-acc (above white-rectangle img)
+                                    (add1 acc))
+                       (divider-acc (above black-rectangle img)
+                                    (add1 acc)))))))
+    (divider-acc black-rectangle 0)))
 (define TICK-SPEED 0.015)
 (define BALL-SPEED 5)
 (define PADDLE-SPEED 10)
@@ -100,7 +100,8 @@
       (advance-element
        (make-element (element-pos b)
                      (make-posn (- 0 (posn-x (element-vel b)))
-                                (* (bounce-factor p) (posn-y (element-vel b))))
+                                (* (bounce-factor p) 
+                                   (posn-y (element-vel b))))
                      (* PADDLE-FACTOR (element-speed b))))
       (make-element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
                     (reset-vel p)
