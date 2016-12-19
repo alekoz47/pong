@@ -70,11 +70,9 @@
 
 ;;World -> Element
 (define (choose-paddle w)
-  (cond ((>= (/ WIDTH 2)
-             (posn-x (element-pos (world-ball w))))
-         (world-paddle1 w))
-        (else
-         (world-paddle2 w))))
+  (if (>= (/ WIDTH 2) (posn-x (element-pos (world-ball w))))
+      (world-paddle1 w)
+      (world-paddle2 w)))
 
 ;;Element Element -> Element
 (define (move-ball b p)
@@ -111,10 +109,12 @@
 
 ;;Element -> Posn
 (define (reset-vel p)
-  (cond ((<= (/ WIDTH 2) (posn-x (element-pos p)))
-         (make-posn 0.707 -0.707))
-        (else
-         (make-posn -0.707 0.707))))
+  (local ((define rand (* (/ pi 2) (/ (random 1000) 2000)))
+          (define x (cos rand))
+          (define y (sin rand)))
+    (if (<= (/ WIDTH 2) (posn-x (element-pos p)))
+        (make-posn x (- 0 y))
+        (make-posn (- 0 x) y))))
 
 ;;Element -> Element
 (define (up/down-ball b)
