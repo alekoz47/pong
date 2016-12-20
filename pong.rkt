@@ -155,12 +155,11 @@
 
 ;;World -> Image
 (define (render w)
-  (overlay DIVIDER
-           (place-images (list BALL PADDLE PADDLE)
-                         (list (element-pos (world-ball w))
-                               (element-pos (world-paddle1 w))
-                               (element-pos (world-paddle2 w)))
-                         MTS)))
+  (place-images (list BALL PADDLE PADDLE)
+                (list (element-pos (world-ball w))
+                      (element-pos (world-paddle1 w))
+                      (element-pos (world-paddle2 w)))
+                (overlay DIVIDER MTS)))
 
 ;;World KeyEvent -> World
 (define (handle-key w ke)
