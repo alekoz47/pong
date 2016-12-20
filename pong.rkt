@@ -93,10 +93,10 @@
 (define (left/right-ball b p)
   (if (and (>= (posn-y (element-pos b))
                (- (posn-y (element-pos p))
-                  (/ (image-height PADDLE) 2)))
+                  (/ (image-height PADDLE) 2) PADDING))
            (<= (posn-y (element-pos b))
                (+ (posn-y (element-pos p))
-                  (/ (image-height PADDLE) 2))))
+                  (/ (image-height PADDLE) 2) PADDING)))
       (advance-element
        (make-element (element-pos b)
                      (make-posn (- 0 (posn-x (element-vel b)))
