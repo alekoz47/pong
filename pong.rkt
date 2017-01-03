@@ -103,7 +103,8 @@
                                 (* (bounce-factor p) 
                                    (posn-y (element-vel b))))
                      (* PADDLE-FACTOR (element-speed b))))
-      (make-element (make-posn (/ WIDTH 2) (+ (/ HEIGHT 4) (random HEIGHT)))
+      (make-element (make-posn (/ WIDTH 2)
+                               (+ (/ HEIGHT 4) (/ (random HEIGHT) 2)))
                     (reset-vel p)
                     BALL-SPEED)))
 
