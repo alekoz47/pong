@@ -63,8 +63,8 @@
 
 ;;World -> World
 (define (tock w)
-  (world (move-ball (world-ball w)
-                    (choose-paddle w))
+  (world (map (move-ball (choose-paddle w))
+              (world-ball w))
          (move-paddle (world-paddle1 w))
          (move-paddle (world-paddle2 w))))
 
@@ -75,19 +75,20 @@
       (world-paddle2 w)))
 
 ;;Element Element -> Element
-(define (move-ball b p)
-  (cond ((or (<= (posn-x (element-pos b))
-                 (* 3 PADDING))
-             (>= (posn-x (element-pos b))
-                 (- WIDTH (* 3 PADDING))))
-         (left/right-ball b p))
-        ((or (>= (posn-y (element-pos b))
-                 (- HEIGHT PADDING))
-             (<= (posn-y (element-pos b))
-                 PADDING))
-         (up/down-ball b))
-        (else
-         (advance-element b))))
+(define (move-ball p)
+  (lambda (b)
+    (cond ((or (<= (posn-x (element-pos b))
+                   (* 3 PADDING))
+               (>= (posn-x (element-pos b))
+                   (- WIDTH (* 3 PADDING))))
+           (left/right-ball b p))
+          ((or (>= (posn-y (element-pos b))
+                   (- HEIGHT PADDING))
+               (<= (posn-y (element-pos b))
+                   PADDING))
+           (up/down-ball b))
+          (else
+           (advance-element b)))))
 
 ;;Element Element -> Element
 (define (left/right-ball b p)
