@@ -155,6 +155,7 @@
                            (- 0 (* 2 (posn-y (element-vel p)))))
                 (element-speed p)))))
 
+#;
 ;;World -> Image
 (define (render w)
   (place-images (list BALL PADDLE PADDLE)
@@ -162,6 +163,31 @@
                       (element-pos (world-paddle1 w))
                       (element-pos (world-paddle2 w)))
                 (overlay DIVIDER MTS)))
+
+;;World -> Image
+(define (render w)
+  (place-images (generate-list w
+                               (world-ball w)
+                               (world-paddle1 w)
+                               (world-paddle2 w)
+                               (lambda (e)
+                                 (if (= (posn-x (element-vel e)) 0)
+                                     PADDLE BALL)))
+                (generate-list w
+                               (world-ball w)
+                               (world-paddle1 w)
+                               (world-paddle2 w)
+                               element-pos)
+                (overlay DIVIDER MTS)))
+
+;;World (listof Ball) Paddle Paddle (Element -> X) -> (listof X)
+(define (generate-list w i s1 s2 f)
+  (define (generate-list-aux w i s1 s2 f rsf)
+    (if (empty? i)
+        (append rsf (list (f s1) (f s2)))
+        (generate-list-aux (world (rest i) s1 s2) i s1 s2 f
+                           (cons (f (first i)) rsf))))
+  (generate-list-aux w i s1 s2 f empty))
 
 ;;World KeyEvent -> World
 (define (handle-key w ke)
@@ -212,9 +238,9 @@
 
 (main
  (world
-  (element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
-           (make-posn 0.701 -0.701)
-           BALL-SPEED)
+  (list (element (make-posn (/ WIDTH 2) (/ HEIGHT 2))
+                 (make-posn 0.701 -0.701)
+                 BALL-SPEED) empty)
   (element (make-posn (* (/ 3 2) PADDING)
                       (/ HEIGHT 2))
            (make-posn 0 0)
