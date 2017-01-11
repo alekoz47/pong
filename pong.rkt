@@ -3,6 +3,7 @@
 (require 2htdp/image)
 (require 2htdp/universe)
 (require lang/posn)
+(require rackunit)
 
 ;;simple two-player pong
 
@@ -14,6 +15,8 @@
 (define BALL (circle 10 "solid" "white"))
 (define PADDING (/ (image-width BALL) 2))
 (define PADDLE (rectangle PADDING 75 "solid" "white"))
+(define DIVIDER (square 0 "solid" "white"))
+#;
 (define DIVIDER
   (local ((define white-rectangle 
             (rectangle PADDING 40 "solid" "white"))
@@ -61,6 +64,9 @@
             (on-key handle-key)
             (on-release handle-release)))
 
+;;================
+;;Tock:
+
 ;;World -> World
 (define (tock w)
   (world (map (move-ball (choose-paddle w))
@@ -92,6 +98,8 @@
 
 ;;Element Element -> Element
 (define (left/right-ball b p)
+  (define (bounce-factor p)
+    (if (zero? (posn-y (element-vel p))) 1 2))
   (if (and (>= (posn-y (element-pos b))
                (- (posn-y (element-pos p))
                   (/ (image-height PADDLE) 2) PADDING))
@@ -108,11 +116,6 @@
                           (+ (/ HEIGHT 4) (/ (random HEIGHT) 2)))
                (reset-vel p)
                BALL-SPEED)))
-
-;;Element Element -> Element
-(define (bounce-factor p)
-  (if (zero? (posn-y (element-vel p)))
-      1 2))
 
 ;;Element -> Posn
 (define (reset-vel p)
@@ -155,39 +158,34 @@
                            (- 0 (* 2 (posn-y (element-vel p)))))
                 (element-speed p)))))
 
-#;
-;;World -> Image
-(define (render w)
-  (place-images (list BALL PADDLE PADDLE)
-                (list (element-pos (world-ball w))
-                      (element-pos (world-paddle1 w))
-                      (element-pos (world-paddle2 w)))
-                (overlay DIVIDER MTS)))
+;;================
+;;Render:
 
 ;;World -> Image
 (define (render w)
-  (place-images (generate-list w
-                               (world-ball w)
+  (define (choose-image e)
+    (if (zero? (posn-x (element-vel e))) PADDLE BALL))
+  (place-images (generate-list (world-ball w)
                                (world-paddle1 w)
                                (world-paddle2 w)
-                               (lambda (e)
-                                 (if (= (posn-x (element-vel e)) 0)
-                                     PADDLE BALL)))
-                (generate-list w
-                               (world-ball w)
+                               choose-image)
+                (generate-list (world-ball w)
                                (world-paddle1 w)
                                (world-paddle2 w)
                                element-pos)
                 (overlay DIVIDER MTS)))
 
 ;;World (listof Ball) Paddle Paddle (Element -> X) -> (listof X)
-(define (generate-list w i s1 s2 f)
-  (define (generate-list-aux w i s1 s2 f rsf)
+(define (generate-list i s1 s2 f)
+  (define (generate-list-aux i s1 s2 f rsf)
     (if (empty? i)
         (append rsf (list (f s1) (f s2)))
-        (generate-list-aux (world (rest i) s1 s2) i s1 s2 f
+        (generate-list-aux (rest i) s1 s2 f
                            (cons (f (first i)) rsf))))
-  (generate-list-aux w i s1 s2 f empty))
+  (generate-list-aux i s1 s2 f empty))
+
+;;================
+;;Keyboard:
 
 ;;World KeyEvent -> World
 (define (handle-key w ke)
